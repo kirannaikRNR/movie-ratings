@@ -1,0 +1,195 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=1">
+    <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+
+  <title>Movie Reviews</title>
+  </head>
+  <body class="">
+    <div class="page-wrapper">
+      <div class="header-wrapper">
+        <div class="header">
+          <div class="container">
+            <div class="header-inner">
+
+              <!-- /.header-toggle -->
+              <div class="header-logo">
+
+                <a class="header-title">Test</a>
+              </div>
+
+            </div>
+            <!-- /.header-inner -->
+          </div>
+          <!-- /.container -->
+        </div>
+        <!-- /.header -->
+      </div>
+      <!-- /.header-wrapper -->
+      <div class="main-wrapper">
+        <div class="main">
+          <div class="main-inner">
+            <div class="page-title">
+              <div class="container">
+                <h1>Movie Listings
+                </h1>
+                <div class="page-title-actions">
+                  <div class="switcher" *ngIf="isUserAuthenticated">
+                    <strong ><a href="javascript:void(0)" ><h1>{{currentUser.first_name}}</h1></a></strong>
+                  </div>
+
+                  <div class="switcher" *ngIf="!isUserAuthenticated">
+                    <strong ><a href="javascript:void(0)"[routerLink]="['/login']" ><h1>Login</h1></a></strong>
+                  </div>
+                  <div class="switcher" *ngIf="isUserAuthenticated">
+                    <strong ><a href="javascript:void(0)" (click)="logout()"><h1>Login out</h1></a></strong>
+                  </div>
+                  <!-- /.switcher -->
+                  <div class="switcher" *ngIf="!isUserAuthenticated">
+                    <strong ><a href="javascript:void(0)" [routerLink]="['/register']" ><h1>Sign Up</h1></a></strong>
+
+                  </div>
+                  <!-- /.switcher -->
+                </div>
+                <!-- /.page-title-actions -->
+              </div>
+              <!-- /.container-->
+            </div>
+            <!-- /.page-title -->
+            <div class="container">
+
+              <div class="row">
+                <div class="col-md-8 col-lg-9">
+                  <div class="sort-options">
+
+                    <ul class="sort-by">
+                      <li class="active"><a href="javascript:void(0)" (click)="sort('name')">Title <span class="glyphicon sort-icon" *ngIf="key =='name'" [ngClass]="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+          </a></li>
+
+                      <li><a href="javascript:void(0)" (click)="sort('year')" >Date
+                        <span class="glyphicon sort-icon" *ngIf="key =='year'" [ngClass]="{'glyphicon-chevron-up':reverse,'glyphicon-chevron-down':!reverse}"></span>
+            </a></li>
+                    </ul>
+                  </div>
+                  <!-- /.sort-options -->
+                  <div class="listing-row" *ngFor="let movie of movies| orderBy: key : reverse | filter:filter | paginate: { itemsPerPage: 10, currentPage: p }; let i = index">
+                    <div class="listing-row-inner">
+                      <a class="listing-row-image">
+                        <img class="listing-row-image-content" [src]="movies.img" alt="No Image">
+                        <!-- <span class="listing-row-image-content" [src]="{{movie.img}}"></span> -->
+                      </a>
+                      <div class="listing-row-content">
+                        <div class="listing-row-content-header">
+                          <h3>{{movie.name}}</h3>
+
+
+                        </div>
+                        <!-- /.listing-row-content-header -->
+                        <div class="listing-row-content-meta">
+                          <div class="listing-row-content-meta-item listing-row-content-meta-rating" >
+                            <span class="listing-row-rating" *ngIf="isUserAuthenticated">
+                            <a href="javascript:void(0)">  <!-- <i class="glyphicon glyphicon-star" *ngFor="let dummy of ' '.repeat(movie.avg_rating).split(''), let x = "index"></i> -->
+                             <rating [(ngModel)]="movie.avg_rating" (click)="updateRating(movie.avg_rating, movie.id)" [max]="5"></rating>
+                        </a>    </span>
+
+                        <span class="listing-row-rating" *ngIf="!isUserAuthenticated">
+                        <!-- <i class="glyphicon glyphicon-star" *ngFor="let dummy of ' '.repeat(movie.avg_rating).split(''), let x = "index"></i> -->
+                            <rating [(ngModel)]="movie.avg_rating" [readonly]="true" [max]="5"></rating>
+                       </span>
+                          </div>
+                          <!-- /.listing-row-meta-item -->
+
+                          <!-- /.listing-row-meta-item -->
+                          <div class="listing-row-content-meta-item listing-row-content-meta-category">
+                            <span class="tag">{{movie.actor_name}}</span>
+                          </div>
+                           <div class="listing-row-content-meta-item listing-row-content-meta-category">
+                            <span class="tag">{{movie.year}}</span>
+                          </div>
+                          <!-- /.listing-row-meta-item -->
+                        </div>
+                        <!-- /.listing-row-meta-item -->
+                        <div class="listing-row-content-body">
+                          {{movie.description}}
+                          <!-- <div class="listing-row-content-read-more">
+                            <a href="listings-detail.html">Read more</a>
+                          </div> -->
+                          <!-- /.listing-row-content-read-more -->
+                        </div>
+                        <!-- /.listing-row-content-body -->
+                      </div>
+                      <!-- /.listing-row-content -->
+                    </div>
+                    <!-- /.listing-row-inner -->
+                  </div>
+                  <!-- /.listing-row -->
+
+                  <ul class="pagination pull-right">
+                    <pagination-controls (pageChange)="p = $event"></pagination-controls>
+                  </ul>
+
+                </div>
+                <!-- /.col -->
+                <div class="col-md-4 col-lg-3">
+                  <div class="sidebar">
+                    <div class="widget">
+                      <h3 class="widgettitle">Filter Listings</h3>
+                      <div class="filter">
+
+
+                          <div class="form-group">
+
+                            <input type="text" class="form-control" [(ngModel)]="filter" name="search" placeholder="Search by Title ...">
+                          </div>
+                      </div>
+                      <!-- /.filter -->
+                    </div>
+                    <!-- /.widget -->
+                  </div>
+                  <!-- /.sidebbar -->
+                </div>
+                <!-- /.col-* -->
+              </div>
+              <!-- /.row -->
+            </div>
+            <!-- /.container-fluid -->
+          </div>
+          <!-- /.main-inner -->
+        </div>
+        <!-- /.main -->
+      </div>
+      <!-- /.main-wrapper -->
+      <div class="footer-wrapper">
+        <div class="footer">
+          <div class="footer-inner">
+            <div class="container">
+              <div class="row">
+                <div class="col-lg-4">
+                  <div class="widget">
+
+                  </div>
+                </div>
+                <!-- /.col-* -->
+
+                <!-- /.col-* -->
+              </div>
+              <!-- /.row -->
+            </div>
+            <!-- /.container -->
+          </div>
+          <!-- /.footer-inner -->
+        </div>
+        <!-- /.footer -->
+      </div>
+      <!-- /.footer-wrapper -->
+    </div>
+    <!-- /.page-wrapper -->
+
+
+
+  </body>
+</html>
